@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:03 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/06/27 15:23:16 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/06/27 17:19:57 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	ft_check_input(char **av)
 	int	check;
 
 	check = ft_atoi(av[1]);
-	if (check == -1)
+	if (check == -1 ||  check == 0)
 		return (write(2, "Philo: invalid number of philosophers\n", 38), 1);
 	check = ft_atoi(av[2]);
 	if (check == -1)

@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:27:11 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/06/27 15:36:47 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/06/27 17:34:12 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,24 +30,30 @@ void	*routine(void *philo)
 	t_philo			*current;
 	t_philo			*philos;
 	long			ms;
+	int				first;
+	int				second;
 
 	current = (t_philo *)philo;
 	philos = current->philosopher;
-
+	usleep((current->id % 2) * 100);
 	while (1)
 	{
 		// eating actions
-		if (current->id % 2 == 0)
+		if (current->left < current->right)
 		{
-			usleep(2000);
-			pthread_mutex_lock(&philos[philos->right].forks);
-			pthread_mutex_lock(&philos[philos->left].forks);
+			first = current->left;
+			second = current->right;
 		}
 		else
 		{
-			pthread_mutex_lock(&philos[philos->left].forks);
-			pthread_mutex_lock(&philos[philos->right].forks);
+			first = current->right;
+			second = current->left;
 		}
+		pthread_mutex_lock(&philos[first].forks);
+		ms = ft_get_time(current->start_time);
+		printf("%ld %d has taken a fork\n", ms, current->id);
+
+		pthread_mutex_lock(&philos[second].forks);
 		ms = ft_get_time(current->start_time);
 		printf("%ld %d has taken a fork\n", ms, current->id);
 		ms = ft_get_time(current->start_time);
@@ -58,8 +64,8 @@ void	*routine(void *philo)
 		gettimeofday(&current->last_meal, NULL);
 		current->meals_eaten++;
 
-		pthread_mutex_unlock(&philos[philos->left].forks);
-		pthread_mutex_unlock(&philos[philos->right].forks);
+		pthread_mutex_unlock(&philos[first].forks);
+		pthread_mutex_unlock(&philos[second].forks);
 
 		// sleeping ation
 		ms = ft_get_time(current->start_time);
@@ -102,7 +108,7 @@ void	*monitor_routine(void *philos)
 			}
 			i++;
 		}
-		usleep(1000);
+		usleep(50);
 	}
 	return (NULL);
 }
