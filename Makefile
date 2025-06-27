@@ -1,5 +1,6 @@
 NAME	=	philo
 SRC		=	philo.c \
+			routine.c \
 			utils.c
 
 OBJ_DIR	=	objects

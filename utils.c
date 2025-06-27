@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/27 13:24:03 by vsoulas           #+#    #+#             */
+/*   Updated: 2025/06/27 15:23:16 by vsoulas          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	ft_check_input(char **av)
@@ -38,7 +50,11 @@ int	ft_initialise_philo(t_philo *philo, char **av, struct timeval start)
 	if (av[5])
 		philo->number_of_time_each_philosopher_must_eat = ft_atoi(av[5]);
 	else
-		philo->number_of_time_each_philosopher_must_eat = 0;
+		philo->number_of_time_each_philosopher_must_eat = -1;
+	philo->left = philo->index;
+	philo->right = ((philo->index + 1) % philo->number_of_philosophers);
+	philo->last_meal = start;
+	philo->meals_eaten = 0;
 	return (0);
 }
 
