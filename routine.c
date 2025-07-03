@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:27:11 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 16:04:19 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 16:09:56 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ int	ft_moni_loop(int i, t_table *table, int all_full, t_philo *phi)
 			pthread_mutex_unlock(&table->death_mutex);
 			return (-1);
 		}
-		ft_update_all(phi, table, i, all_full);
+		ft_update(phi, table, i, all_full);
 	}
 	return (all_full);
 }

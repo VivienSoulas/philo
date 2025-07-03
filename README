@@ -1,3 +1,15 @@
 deadlock check :
 valgrind --tool=helgrind
 valgrind --tool=drd
+
+./philo 1 800 200 200
+	should not eat and die
+./philo 5 800 200 200
+	should not die
+./philo 5 800 200 200 7
+	same and stop after 7 meals
+./philo 4 410 200 200
+	should not die
+./philo 4 310 200 100
+	die
+2 philosophers no more than 10ms delay for death
