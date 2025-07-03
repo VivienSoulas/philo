@@ -6,11 +6,28 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:23:56 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/06/27 16:24:13 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 14:52:00 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	ft_join_threads(t_philo *philo, t_monitor_data *monitor_data)
+{
+	int	i;
+
+	i = 0;
+	while (i < philo->table->n_philo)
+	{
+		pthread_join(philo[i].thread, NULL);
+		pthread_mutex_destroy(&philo->table->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&philo->table->death_mutex);
+	pthread_mutex_destroy(&philo->table->print_mutex);
+	pthread_mutex_destroy(&philo->table->full_mutex);
+	pthread_join(monitor_data->monitor, NULL);
+}
 
 int	main(int ac, char **av)
 {
@@ -41,7 +58,7 @@ int	main(int ac, char **av)
 	if (monitor_data == NULL)
 		return (ft_clean_table(table, table->n_philo), free(table), 1);
 	// philosophers to clean + free(philosophers)
-
+	ft_join_threads(philosophers, monitor_data);
 
 	return (ft_clean_table(table, table->n_philo), free(table), 0); // free philosophers, free monitor_data
 }
@@ -83,6 +100,9 @@ t_philo	*ft_create_philos(t_table *table)
 		philos[i].right_fork = (i + 1) % table->n_philo;
 		philos[i]. last_meal = table->start_time;
 		philos[i].meals_eaten = 0;
+		philos[i].full = 0;
+		philos[i].check = 0;
+		philos[i].death = 0;
 		philos[i].table = table;
 		if (pthread_create(&philos[i].thread, NULL, &routine, &philos[i]) != 0)
 			return (ft_clean_philos(philos, i), NULL);

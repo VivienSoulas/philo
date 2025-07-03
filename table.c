@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   table.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 11:43:49 by vsoulas           #+#    #+#             */
+/*   Updated: 2025/07/03 14:11:38 by vsoulas          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	ft_init_forks(t_table *table)
@@ -17,7 +29,7 @@ int	ft_init_forks(t_table *table)
 	return (0);
 }
 
-void	ft_initialise_table(t_table *table, struct timeval start, char **av)
+void	ft_init_table(t_table *table, struct timeval start, char **av)
 {
 	table->start_time = start;
 	table->n_philo = ft_atoi(av[1]);
@@ -29,6 +41,7 @@ void	ft_initialise_table(t_table *table, struct timeval start, char **av)
 	else
 		table->n_meals = -1;
 	table->death = 0;
+	table->full = 0;
 	table->finished_eating = 0;
 }
 
@@ -37,7 +50,7 @@ int	ft_set_table(t_table *table, struct timeval start, char **av)
 	int	i;
 
 	i = 0;
-	ft_initialise_table(table, start, av);
+	ft_init_table(table, start, av);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->n_philo);
 	if (table->forks == NULL)
 		return (1);
@@ -48,6 +61,12 @@ int	ft_set_table(t_table *table, struct timeval start, char **av)
 		pthread_mutex_destroy(&table->death_mutex);
 		return (free(table->forks), 1);
 	}
+if (pthread_mutex_init(&table->full_mutex, NULL))
+{
+	pthread_mutex_destroy(&table->death_mutex);
+	pthread_mutex_destroy(&table->print_mutex);
+	return (free(table->forks), 1);
+}
 	if (ft_init_forks(table) == 1)
 		return (1);
 	return (0);

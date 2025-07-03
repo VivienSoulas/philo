@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:03 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/06/27 17:19:57 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 14:46:53 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	ft_check_input(char **av)
 	int	check;
 
 	check = ft_atoi(av[1]);
-	if (check == -1 ||  check == 0)
+	if (check == -1 || check == 0)
 		return (write(2, "Philo: invalid number of philosophers\n", 38), 1);
 	check = ft_atoi(av[2]);
 	if (check == -1)
@@ -65,6 +65,31 @@ long	ft_get_time(struct timeval start_time)
 	long			ms;
 
 	gettimeofday(&now, NULL);
-	ms = now.tv_sec * 1000000 + now.tv_usec;
+	ms = (now.tv_sec - start_time.tv_sec) * 1000
+		+ (now.tv_usec - start_time.tv_usec) / 1000;
 	return (ms);
+}
+
+void	ft_print(long ms, int index, int message, t_philo *philo)
+{
+	//if (philo->table->death == 0)
+	//{
+		pthread_mutex_lock(&philo->table->print_mutex);
+		if (message == TAKING_FORK)
+			printf("%ld %d has taken a fork\n", ms, index);
+		else if (message == EATING)
+			printf("%ld %d is eating\n", ms, index);
+		else if (message == SLEEPING)
+			printf("%ld %d is sleeping\n", ms, index);
+		else if (message == THINKING)
+			printf("%ld %d is thinking\n", ms, index);
+		pthread_mutex_unlock(&philo->table->print_mutex);
+	//}
+	if (message == DEAD)
+	{
+		pthread_mutex_lock(&philo->table->print_mutex);
+		usleep(500);
+		printf("%ld %d died______________________________\n", ms, index);
+		pthread_mutex_unlock(&philo->table->print_mutex);
+	}
 }

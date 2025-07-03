@@ -1,2 +1,3 @@
 deadlock check :
 valgrind --tool=helgrind
+valgrind --tool=drd

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   clean_up.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 11:41:54 by vsoulas           #+#    #+#             */
+/*   Updated: 2025/07/03 13:51:57 by vsoulas          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 void	ft_clean_table(t_table *table, int forks)
@@ -9,6 +21,7 @@ void	ft_clean_table(t_table *table, int forks)
 	}
 	pthread_mutex_destroy(&table->death_mutex);
 	pthread_mutex_destroy(&table->print_mutex);
+	pthread_mutex_destroy(&table->full_mutex);
 	free(table->forks);
 	table->forks = NULL;
 }
@@ -22,12 +35,17 @@ void	ft_clean_philos(t_philo *philos, int count)
 		count--;
 	}
 	free(philos);
+	philos = NULL;
 }
 
 void	ft_clean_all(t_philo *philos, t_table *table)
 {
-	ft_clean_philos(philos, table->n_philo);
-	ft_clean_table(table, table->n_philo);
-	free(table);
-	free(philos);
+	if (philos && table)
+		ft_clean_philos(philos, table->n_philo);
+	if (table)
+	{
+		ft_clean_table(table, table->n_philo);
+		free(table);
+		table = NULL;
+	}
 }

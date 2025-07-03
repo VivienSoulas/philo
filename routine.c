@@ -6,110 +6,136 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:27:11 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/06/27 17:34:12 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 14:53:08 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// we are here using the % in order for the last
-//		philosopher to find the first fork on the table
-void	*routine(void *philo)
+void	ft_philosophing(t_philo *philo, int first, int second)
 {
-	t_philo			*current;
-	t_philo			*philos;
-	long			ms;
+	long	ms;
+// eating
+	// takes a fork
+	pthread_mutex_lock(&philo->table->forks[first]);
+	ms = ft_get_time(philo->table->start_time);
+	ft_print(ms, philo->index, TAKING_FORK, philo);
+	
+	// takes a second fork
+	pthread_mutex_lock(&philo->table->forks[second]);
+	ms = ft_get_time(philo->table->start_time);
+	ft_print(ms, philo->index, TAKING_FORK, philo);
+
+	// eats
+	ms = ft_get_time(philo->table->start_time);
+	ft_print(ms, philo->index, EATING, philo);
+	//time to eat
+	usleep(philo->table->t_eat * 1000);
+	// update last meal time and total of meal eaten
+	gettimeofday(&philo->last_meal, NULL);
+	philo->meals_eaten++;
+
+	// drop forks
+	pthread_mutex_unlock(&philo->table->forks[first]);
+	//ft_print(ms, philo->index, DROPPED, philo);
+	pthread_mutex_unlock(&philo->table->forks[second]);
+	//ft_print(ms, philo->index, DROPPED, philo);
+
+// sleeping
+	ms = ft_get_time(philo->table->start_time);
+	ft_print(ms, philo->index, SLEEPING, philo);
+	usleep(philo->table->t_sleep * 1000);
+	
+// thinking
+	ms = ft_get_time(philo->table->start_time);
+	ft_print(ms, philo->index, THINKING, philo);
+}
+
+void	*routine(void *philos)
+{
+	t_philo			*philo;
+	t_table			*table;
 	int				first;
 	int				second;
 
-	current = (t_philo *)philo;
-	philos = current->philosopher;
-	usleep((current->id % 2) * 100);
-	while (philos->time_to_die < 0)
+	philo = (t_philo *)philos;
+	table = philo->table;
+	while (1)
 	{
-		// printf("%d time to die ======== %d\n", current->id, current->time_to_die);
-		// if (current->time_to_die < 0)
-		// {
-		// 	printf("======================\n");
-		// 	break ;
-		// }
-		// eating actions
-		if (current->left < current->right)
+		if (philo->index % 2)
 		{
-			first = current->left;
-			second = current->right;
+			first = philo->left_fork;
+			second = philo->right_fork;
 		}
 		else
 		{
-			first = current->right;
-			second = current->left;
+			first = philo->right_fork;
+			second = philo->left_fork;
 		}
-		pthread_mutex_lock(&philos[first].forks);
-		ms = ft_get_time(current->start_time);
-		printf("%ld %d has taken a fork\n", ms, current->id);
-
-		pthread_mutex_lock(&philos[second].forks);
-		ms = ft_get_time(current->start_time);
-		printf("%ld %d has taken a fork\n", ms, current->id);
-		ms = ft_get_time(current->start_time);
-
-		printf("%ld %d is eating\n", ms, current->id);
-		usleep(current->time_to_eat * 1000);
-
-		gettimeofday(&current->last_meal, NULL);
-		current->meals_eaten++;
-
-		pthread_mutex_unlock(&philos[first].forks);
-		pthread_mutex_unlock(&philos[second].forks);
-
-		// sleeping ation
-		ms = ft_get_time(current->start_time);
-		printf("%ld %d is sleeping\n", ms, current->id);
-		usleep(current->time_to_sleep * 1000);
-
-		// thinking action
-		ms = ft_get_time(current->start_time);
-		printf("%ld %d is thinking\n", ms, current->id);
-
-		if (current->number_of_time_each_philosopher_must_eat > 0
-			&& current->meals_eaten == current->number_of_time_each_philosopher_must_eat)
+		ft_philosophing(philo, first, second);
+		if (philo->table->n_meals > 0
+			&& philo->meals_eaten == philo->table->n_meals)
+		{
+			philo->full = 1;
+			break ;
+		}
+		if (philo->table->death == 1)
 			break ;
 	}
-	return (NULL);
+	return (printf("exiting thread\n"), NULL);
 }
 
-void	*monitor_routine(void *philos)
+void	*monitor_routine(void *monitor_datas)
 {
-	struct timeval	now;
+	t_monitor_data	*monitor_data;
 	t_philo			*philo;
-	long			time_past;
-	long			ms;
+	t_table			*table;
 	int				i;
+	int				all_full;
+	struct timeval	now;
+	int				time_past;
 
-	philo = (t_philo *)philos;
+	monitor_data = monitor_datas;
+	philo = monitor_data->philo;
+	table = monitor_data->table;
+	all_full = 0;
 	while (1)
 	{
+//check for death
 		i = 0;
-		while (i < philo[0].number_of_philosophers)
+		while (i < table->n_philo)
 		{
 			gettimeofday(&now, NULL);
 			time_past = (now.tv_sec - philo[i].last_meal.tv_sec) * 1000
 				+ (now.tv_usec - philo[i].last_meal.tv_usec) / 1000;
-			if (time_past > philo[i].time_to_die)
+			if (time_past > table->t_die)
 			{
-				int j = 0;
-				while (j < philo[0].number_of_philosophers)
-				{
-					philo[j].time_to_die = -1;
-					j++;
-				}
-				ms = ft_get_time(philo[i].start_time);
-				printf("%ld %d died\n", ms, philo[i].id);
+				long ms = ft_get_time(philo->table->start_time);
+				ft_print(ms, philo->index, DEAD, philo);
+				//pthread_mutex_lock(&table->death_mutex);
+				table->death = 1;
+				//pthread_mutex_unlock(&table->death_mutex);
 				return (NULL);
+			}
+			if (philo[i].full == 1 && philo[i].check == 0)
+			{
+				pthread_mutex_lock(&table->full_mutex);
+				philo[i].check = 1;
+				all_full++;
+				pthread_mutex_unlock(&table->full_mutex);
 			}
 			i++;
 		}
-		usleep(50);
+		if (all_full == table->n_philo)
+		{
+			pthread_mutex_lock(&table->full_mutex);
+			table->full = 1;
+			//usleep(100);
+			pthread_mutex_unlock(&table->full_mutex);
+			printf("fulllllllllllllll\n");
+			return (NULL);
+		}
 	}
+	
 	return (NULL);
 }
