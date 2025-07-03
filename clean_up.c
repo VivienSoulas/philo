@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 11:41:54 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 13:51:57 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 15:36:18 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,8 @@ void	ft_clean_philos(t_philo *philos, int count)
 
 void	ft_clean_all(t_philo *philos, t_table *table)
 {
-	if (philos && table)
-		ft_clean_philos(philos, table->n_philo);
-	if (table)
-	{
-		ft_clean_table(table, table->n_philo);
-		free(table);
-		table = NULL;
-	}
+	ft_clean_philos(philos, table->n_philo);
+	ft_clean_table(table, table->n_philo);
+	free(table);
+	table = NULL;
 }

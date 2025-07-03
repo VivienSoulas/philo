@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 11:43:49 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 14:11:38 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 15:15:56 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,12 @@ int	ft_set_table(t_table *table, struct timeval start, char **av)
 		pthread_mutex_destroy(&table->death_mutex);
 		return (free(table->forks), 1);
 	}
-if (pthread_mutex_init(&table->full_mutex, NULL))
-{
-	pthread_mutex_destroy(&table->death_mutex);
-	pthread_mutex_destroy(&table->print_mutex);
-	return (free(table->forks), 1);
-}
+	if (pthread_mutex_init(&table->full_mutex, NULL))
+	{
+		pthread_mutex_destroy(&table->death_mutex);
+		pthread_mutex_destroy(&table->print_mutex);
+		return (free(table->forks), 1);
+	}
 	if (ft_init_forks(table) == 1)
 		return (1);
 	return (0);

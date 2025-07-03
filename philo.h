@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:00 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 15:03:58 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 16:03:53 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,19 @@ typedef struct s_monitor_data
 // main
 t_philo			*ft_create_philos(t_table *table);
 t_monitor_data	*ft_create_monitor(t_philo *philo, t_table *table);
+void			ft_join_threads(t_philo *philo, t_monitor_data *monitor_data);
 
 // table
 int				ft_set_table(t_table *table, struct timeval start, char **av);
 void			ft_init_table(t_table *table, struct timeval start, char **av);
 int				ft_init_forks(t_table *table);
+
+// routine
+void			*routine(void *philo);
+int				ft_routine_loop(t_philo *philo);
+void			*monitor_routine(void *monitor_datas);
+int				ft_moni_loop(int i, t_table *table, int all_full, t_philo *phi);
+void			ft_philosophing(t_philo *philo, int first, int second);
 
 // clean up
 void			ft_clean_table(t_table *table, int forks);
@@ -86,10 +94,6 @@ int				ft_check_input(char **av);
 int				ft_atoi(char *s1);
 long			ft_get_time(struct timeval start_time);
 void			ft_print(long ms, int index, int message, t_philo *philo);
-
-// routine
-void			*routine(void *philo);
-void			*monitor_routine(void *monitor_datas);
-void			ft_philosophing(t_philo *philo, int first, int second);
+void			ft_update(t_philo *phi, t_table *table, int i, int all_full);
 
 #endif

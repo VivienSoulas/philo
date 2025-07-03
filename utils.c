@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:03 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 15:03:21 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 16:04:04 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,18 @@ void	ft_print(long ms, int index, int message, t_philo *philo)
 	if (message == DEAD)
 	{
 		pthread_mutex_lock(&philo->table->print_mutex);
-		printf("%ld %d died______________________________\n", ms, index);
+		printf("%ld %d died\n", ms, index);
 		pthread_mutex_unlock(&philo->table->print_mutex);
+	}
+}
+
+void	ft_update(t_philo *phi, t_table *table, int i, int all_full)
+{
+	if (phi[i].full == 1 && phi[i].check == 0)
+	{
+		pthread_mutex_lock(&table->full_mutex);
+		phi[i].check = 1;
+		all_full++;
+		pthread_mutex_unlock(&table->full_mutex);
 	}
 }
