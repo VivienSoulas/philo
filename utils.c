@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:03 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 14:46:53 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 15:03:21 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ long	ft_get_time(struct timeval start_time)
 
 void	ft_print(long ms, int index, int message, t_philo *philo)
 {
-	//if (philo->table->death == 0)
-	//{
+	if (philo->table->death == 0)
+	{
 		pthread_mutex_lock(&philo->table->print_mutex);
 		if (message == TAKING_FORK)
 			printf("%ld %d has taken a fork\n", ms, index);
@@ -84,11 +84,10 @@ void	ft_print(long ms, int index, int message, t_philo *philo)
 		else if (message == THINKING)
 			printf("%ld %d is thinking\n", ms, index);
 		pthread_mutex_unlock(&philo->table->print_mutex);
-	//}
+	}
 	if (message == DEAD)
 	{
 		pthread_mutex_lock(&philo->table->print_mutex);
-		usleep(500);
 		printf("%ld %d died______________________________\n", ms, index);
 		pthread_mutex_unlock(&philo->table->print_mutex);
 	}

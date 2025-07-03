@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:23:56 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 14:52:00 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 15:04:03 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ t_philo	*ft_create_philos(t_table *table)
 		philos[i].meals_eaten = 0;
 		philos[i].full = 0;
 		philos[i].check = 0;
-		philos[i].death = 0;
 		philos[i].table = table;
 		if (pthread_create(&philos[i].thread, NULL, &routine, &philos[i]) != 0)
 			return (ft_clean_philos(philos, i), NULL);

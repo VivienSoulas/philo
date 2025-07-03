@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:00 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 14:51:46 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 15:03:58 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ typedef struct s_philo
 	int				meals_eaten;
 	int				full;
 	int				check;
-	int				death;
 	struct timeval	last_meal;
 	t_table			*table;
 }	t_philo;

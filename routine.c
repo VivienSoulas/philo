@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:27:11 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 14:53:08 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/03 15:04:23 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	*routine(void *philos)
 		if (philo->table->death == 1)
 			break ;
 	}
-	return (printf("exiting thread\n"), NULL);
+	return (NULL);
 }
 
 void	*monitor_routine(void *monitor_datas)
@@ -112,9 +112,9 @@ void	*monitor_routine(void *monitor_datas)
 			{
 				long ms = ft_get_time(philo->table->start_time);
 				ft_print(ms, philo->index, DEAD, philo);
-				//pthread_mutex_lock(&table->death_mutex);
+				pthread_mutex_lock(&table->death_mutex);
 				table->death = 1;
-				//pthread_mutex_unlock(&table->death_mutex);
+				pthread_mutex_unlock(&table->death_mutex);
 				return (NULL);
 			}
 			if (philo[i].full == 1 && philo[i].check == 0)
@@ -136,6 +136,5 @@ void	*monitor_routine(void *monitor_datas)
 			return (NULL);
 		}
 	}
-	
 	return (NULL);
 }
