@@ -1,0 +1,2 @@
+deadlock check :
+valgrind --tool=helgrind

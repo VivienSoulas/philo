@@ -14,9 +14,9 @@
 
 int	main(int ac, char **av)
 {
-	t_philo			*philo;
-	pthread_t		monitor;	
-	int			 	number_of_philosophers;
+	t_table			*table;
+	t_philo			*philosophers;
+	t_monitor_data	*monitor_data;
 	struct timeval	start_time;
 
 	if (ac > 6 || ac < 5)
@@ -27,20 +27,38 @@ int	main(int ac, char **av)
 	if (ft_check_input(av) == 1)
 		return (1);
 	gettimeofday(&start_time, NULL);
-	number_of_philosophers = ft_atoi(av[1]);
-	philo = ft_create_threads(number_of_philosophers, av, start_time);
-	if (philo == NULL)
-		return (write(2, "Philo: malloc fail\n", 20), 1);
-
-	if (pthread_create(&monitor, NULL, &monitor_routine, philo) != 0)
-		return (free(philo), write(2, "FAILED creating monitor thread", 32), 1);
-
-	if (ft_join_threads(monitor, philo, number_of_philosophers) == 1)
-		return (free(philo), 3);
 
 
+	table = malloc(sizeof(t_table));
+	if (table == NULL)
+		return (1);
+	if (ft_set_table(table, start_time, av) == 1)
+		return (free(table), 1);
+	philosophers = ft_create_philos(table);
+	if (philosophers == NULL)
+		return (ft_clean_table(table, table->n_philo), free(table), 1);
+	monitor_data = ft_create_monitor(philosophers, table);
+	if (monitor_data == NULL)
+		return (ft_clean_table(table, table->n_philo), free(table), 1);
+	// philosophers to clean + free(philosophers)
 
-	return (free(philo), 0);
+
+	return (ft_clean_table(table, table->n_philo), free(table), 0); // free philosophers, free monitor_data
+}
+
+t_monitor_data	*ft_create_monitor(t_philo *philo, t_table *table)
+{
+	t_monitor_data	*monitor_data;
+
+	monitor_data = malloc(sizeof(t_monitor_data));
+	if (monitor_data == NULL)
+		return (NULL);
+	monitor_data->philo = philo;
+	monitor_data->table = table;
+	if (pthread_create(&monitor_data->monitor,
+			NULL, &monitor_routine, monitor_data) != 0)
+		return (free(monitor_data), NULL);
+	return (monitor_data);
 }
 
 // creates as many threads as philosophers requeste
@@ -48,58 +66,27 @@ int	main(int ac, char **av)
 // in order to start the philolsopher on 1 instead of 0
 //	we add + 1 to philosopher index
 // philo[i].philo = philo --> in order to find the forks in routine
-t_philo	*ft_create_threads(int number_of_phil, char **av, struct timeval start)
+t_philo	*ft_create_philos(t_table *table)
 {
 	int			i;
 	t_philo		*philos;
 
 	i = 0;
-	philos = malloc(sizeof(t_philo) * number_of_phil);
+	philos = malloc(sizeof(t_philo) * table->n_philo);
 	if (philos == NULL)
 		return (NULL);
-	while (i < number_of_phil)
+	while (i < table->n_philo)
 	{
-		philos[i].index = i;
-		philos[i].id = i + 1;
-		philos[i].philosopher = philos;
-		if (ft_initialise_philo(&philos[i], av, start) == 1)
-			return (free(philos), NULL);
+		philos[i].id = i;
+		philos[i].index = i + 1;
+		philos[i].left_fork = i;
+		philos[i].right_fork = (i + 1) % table->n_philo;
+		philos[i]. last_meal = table->start_time;
+		philos[i].meals_eaten = 0;
+		philos[i].table = table;
 		if (pthread_create(&philos[i].thread, NULL, &routine, &philos[i]) != 0)
-		{
-			write(2, "FAILED creating threads", 24);
-			return (free(philos), NULL);
-		}
+			return (ft_clean_philos(philos, i), NULL);
 		i++;
 	}
 	return (philos);
-}
-
-int	ft_join_threads(pthread_t monitor, t_philo *philo, int number_of_philo)
-{
-	int	i;
-	int	error;
-
-	i = 0;
-	error = 0;
-	while (i < number_of_philo)
-	{
-		if (pthread_join(philo[i].thread, NULL) != 0)
-		{
-			write(2, "FAILED joining philosopher", 27);
-			error = 1;
-		}
-		i++;
-	}
-	i = 0;
-	while (i < number_of_philo)
-	{
-		pthread_mutex_destroy(&philo[i].forks);
-		i++;
-	}
-	if (pthread_join(monitor, NULL) != 0)
-	{
-		write(2, "FAILED joining monitor thread", 30);
-		error = 1;
-	}
-	return (error);
 }

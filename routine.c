@@ -12,17 +12,6 @@
 
 #include "philo.h"
 
-long	ft_get_time(struct timeval start_time)
-{
-	struct timeval	now;
-	long			ms;
-
-	gettimeofday(&now, NULL);
-	ms = (now.tv_sec - start_time.tv_sec) * 1000
-		+ (now.tv_usec - start_time.tv_usec) / 1000;
-	return (ms);
-}
-
 // we are here using the % in order for the last
 //		philosopher to find the first fork on the table
 void	*routine(void *philo)
@@ -36,8 +25,14 @@ void	*routine(void *philo)
 	current = (t_philo *)philo;
 	philos = current->philosopher;
 	usleep((current->id % 2) * 100);
-	while (1)
+	while (philos->time_to_die < 0)
 	{
+		// printf("%d time to die ======== %d\n", current->id, current->time_to_die);
+		// if (current->time_to_die < 0)
+		// {
+		// 	printf("======================\n");
+		// 	break ;
+		// }
 		// eating actions
 		if (current->left < current->right)
 		{
@@ -102,6 +97,12 @@ void	*monitor_routine(void *philos)
 				+ (now.tv_usec - philo[i].last_meal.tv_usec) / 1000;
 			if (time_past > philo[i].time_to_die)
 			{
+				int j = 0;
+				while (j < philo[0].number_of_philosophers)
+				{
+					philo[j].time_to_die = -1;
+					j++;
+				}
 				ms = ft_get_time(philo[i].start_time);
 				printf("%ld %d died\n", ms, philo[i].id);
 				return (NULL);

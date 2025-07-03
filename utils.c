@@ -37,27 +37,6 @@ int	ft_check_input(char **av)
 	return (0);
 }
 
-// initialise philosophers' settings according to user input
-int	ft_initialise_philo(t_philo *philo, char **av, struct timeval start)
-{
-	if (pthread_mutex_init(&philo->forks, NULL) != 0)
-		return (write(2, "Philo: error init_mutex\n", 25), 1);
-	philo->start_time = start;
-	philo->number_of_philosophers = ft_atoi(av[1]);
-	philo->time_to_die = ft_atoi(av[2]);
-	philo->time_to_eat = ft_atoi(av[3]);
-	philo->time_to_sleep = ft_atoi(av[4]);
-	if (av[5])
-		philo->number_of_time_each_philosopher_must_eat = ft_atoi(av[5]);
-	else
-		philo->number_of_time_each_philosopher_must_eat = -1;
-	philo->left = philo->index;
-	philo->right = ((philo->index + 1) % philo->number_of_philosophers);
-	philo->last_meal = start;
-	philo->meals_eaten = 0;
-	return (0);
-}
-
 // modified atoi to check for negative and non numerical input
 int	ft_atoi(char *s1)
 {
@@ -68,9 +47,7 @@ int	ft_atoi(char *s1)
 	n = 0;
 	i = 0;
 	sign = 1;
-	if (s1[i] == '-')
-		return (-1);
-	else if (s1[i] == '+')
+	if (s1[i] == '+')
 		i++;
 	while (s1[i] >= '0' && s1[i] <= '9')
 	{
@@ -80,4 +57,14 @@ int	ft_atoi(char *s1)
 	if (s1[i])
 		return (-1);
 	return (n * sign);
+}
+
+long	ft_get_time(struct timeval start_time)
+{
+	struct timeval	now;
+	long			ms;
+
+	gettimeofday(&now, NULL);
+	ms = now.tv_sec * 1000000 + now.tv_usec;
+	return (ms);
 }
