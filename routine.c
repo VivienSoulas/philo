@@ -132,7 +132,16 @@ void	ft_philosophing(t_philo *philo, int first, int second)
 	}
 	ms = ft_get_time(philo->table->start_time);
 	ft_print(ms, philo->index, TAKING_FORK, philo);
-	pthread_mutex_lock(&philo->table->forks[second]);
+pthread_mutex_lock(&philo->table->forks[second]);
+pthread_mutex_lock(&philo->table->death_mutex);
+is_dead = philo->table->death;
+pthread_mutex_unlock(&philo->table->death_mutex);
+if (is_dead == 1)
+{
+	pthread_mutex_unlock(&philo->table->forks[first]);
+	pthread_mutex_unlock(&philo->table->forks[second]);
+	return ;
+}
 	ms = ft_get_time(philo->table->start_time);
 	ft_print(ms, philo->index, TAKING_FORK, philo);
 	ms = ft_get_time(philo->table->start_time);
