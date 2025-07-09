@@ -52,9 +52,9 @@ int	ft_routine_loop(t_philo *philo)
 		philo->full = 1;
 		return (1);
 	}
-	pthread_mutex_lock(&philo->table->death);
+	pthread_mutex_lock(&philo->table->death_mutex);
 	is_dead = philo->table->death;
-	pthread_mutex_unlock(&philo->table->death);
+	pthread_mutex_unlock(&philo->table->death_mutex);
 	if (is_dead == 1)
 		return (1);
 	return (0);
