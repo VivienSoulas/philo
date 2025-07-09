@@ -93,13 +93,13 @@ void	ft_print(long ms, int index, int message, t_philo *philo)
 	}
 }
 
-void	ft_update(t_philo *phi, t_table *table, int i, int all_full)
+void	ft_update(t_philo *phi, t_table *table, int i, int *all_full)
 {
 	if (phi[i].full == 1 && phi[i].check == 0)
 	{
 		pthread_mutex_lock(&table->full_mutex);
 		phi[i].check = 1;
-		all_full++;
+		(*all_full)++;
 		pthread_mutex_unlock(&table->full_mutex);
 	}
 }

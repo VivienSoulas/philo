@@ -96,5 +96,6 @@ void	ft_join_threads(t_philo *philo, t_monitor_data *monitor_data)
 	pthread_mutex_destroy(&philo->table->death_mutex);
 	pthread_mutex_destroy(&philo->table->full_mutex);
 	pthread_mutex_destroy(&philo->table->print_mutex);
+	pthread_mutex_destroy(&philo->table->meals_mutex);
 	pthread_join(monitor_data->monitor, NULL);
 }

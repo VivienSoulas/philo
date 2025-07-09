@@ -47,9 +47,9 @@ void	ft_init_table(t_table *table, struct timeval start, char **av)
 
 int	ft_set_table(t_table *table, struct timeval start, char **av)
 {
-	int	i;
+	// int	i;
 
-	i = 0;
+	// i = 0;
 	ft_init_table(table, start, av);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->n_philo);
 	if (table->forks == NULL)
@@ -67,6 +67,13 @@ int	ft_set_table(t_table *table, struct timeval start, char **av)
 		pthread_mutex_destroy(&table->print_mutex);
 		return (free(table->forks), 1);
 	}
+if (pthread_mutex_init(&table->meals_mutex, NULL))
+{
+	pthread_mutex_destroy(&table->death_mutex);
+	pthread_mutex_destroy(&table->print_mutex);
+	pthread_mutex_destroy(&table->full_mutex);
+	return (free(table->forks), 1);
+}
 	if (ft_init_forks(table) == 1)
 		return (1);
 	return (0);

@@ -15,10 +15,8 @@
 void	*routine(void *philos)
 {
 	t_philo			*philo;
-	t_table			*table;
 
 	philo = (t_philo *)philos;
-	table = philo->table;
 	while (1)
 	{
 		if (ft_routine_loop(philo) == 1)
@@ -31,6 +29,8 @@ int	ft_routine_loop(t_philo *philo)
 {
 	int	first;
 	int	second;
+	int	current_meal;
+	int	is_dead;
 
 	if (philo->index % 2)
 	{
@@ -43,13 +43,19 @@ int	ft_routine_loop(t_philo *philo)
 		second = philo->left_fork;
 	}
 	ft_philosophing(philo, first, second);
+	pthread_mutex_lock(&philo->table->meals_mutex);
+	current_meal = philo->meals_eaten;
+	pthread_mutex_unlock(&philo->table->meals_mutex);
 	if (philo->table->n_meals > 0
-		&& philo->meals_eaten == philo->table->n_meals)
+		&& current_meal == philo->table->n_meals)
 	{
 		philo->full = 1;
 		return (1);
 	}
-	if (philo->table->death == 1)
+	pthread_mutex_lock(&philo->table->death);
+	is_dead = philo->table->death;
+	pthread_mutex_unlock(&philo->table->death);
+	if (is_dead == 1)
 		return (1);
 	return (0);
 }
@@ -69,7 +75,7 @@ void	*monitor_routine(void *monitor_datas)
 	while (1)
 	{
 		i = -1;
-		all_full = ft_moni_loop(i, table, all_full, philo);
+		all_full = ft_moni_loop(i, table, &all_full, philo);
 		if (all_full == table->n_philo)
 		{
 			pthread_mutex_lock(&table->full_mutex);
@@ -83,7 +89,7 @@ void	*monitor_routine(void *monitor_datas)
 	return (NULL);
 }
 
-int	ft_moni_loop(int i, t_table *table, int all_full, t_philo *phi)
+int	ft_moni_loop(int i, t_table *table, int *all_full, t_philo *phi)
 {
 	int				time_past;
 	struct timeval	now;
@@ -92,12 +98,14 @@ int	ft_moni_loop(int i, t_table *table, int all_full, t_philo *phi)
 	while (++i < table->n_philo)
 	{
 		gettimeofday(&now, NULL);
+		pthread_mutex_lock(&phi[i].table->meals_mutex);
 		time_past = (now.tv_sec - phi[i].last_meal.tv_sec) * 1000
 			+ (now.tv_usec - phi[i].last_meal.tv_usec) / 1000;
+		pthread_mutex_unlock(&phi[i].table->meals_mutex);
 		if (time_past > table->t_die)
 		{
 			ms = ft_get_time(phi->table->start_time);
-			ft_print(ms, phi->index, DEAD, phi);
+			ft_print(ms, phi[i].index, DEAD, phi);
 			pthread_mutex_lock(&table->death_mutex);
 			table->death = 1;
 			pthread_mutex_unlock(&table->death_mutex);
@@ -105,14 +113,23 @@ int	ft_moni_loop(int i, t_table *table, int all_full, t_philo *phi)
 		}
 		ft_update(phi, table, i, all_full);
 	}
-	return (all_full);
+	return (*all_full);
 }
 
 void	ft_philosophing(t_philo *philo, int first, int second)
 {
 	long	ms;
+	int		is_dead;
 
 	pthread_mutex_lock(&philo->table->forks[first]);
+	pthread_mutex_lock(&philo->table->death_mutex);
+	is_dead = philo->table->death;
+	pthread_mutex_unlock(&philo->table->death_mutex);
+	if (is_dead == 1)
+	{
+		pthread_mutex_unlock(&philo->table->forks[first]);
+		return ;
+	}
 	ms = ft_get_time(philo->table->start_time);
 	ft_print(ms, philo->index, TAKING_FORK, philo);
 	pthread_mutex_lock(&philo->table->forks[second]);
@@ -121,8 +138,10 @@ void	ft_philosophing(t_philo *philo, int first, int second)
 	ms = ft_get_time(philo->table->start_time);
 	ft_print(ms, philo->index, EATING, philo);
 	usleep(philo->table->t_eat * 1000);
-	gettimeofday(&philo->last_meal, NULL);
-	philo->meals_eaten++;
+pthread_mutex_lock(&philo->table->meals_mutex);
+gettimeofday(&philo->last_meal, NULL);
+philo->meals_eaten++;
+pthread_mutex_unlock(&philo->table->meals_mutex);
 	pthread_mutex_unlock(&philo->table->forks[first]);
 	pthread_mutex_unlock(&philo->table->forks[second]);
 	ms = ft_get_time(philo->table->start_time);
