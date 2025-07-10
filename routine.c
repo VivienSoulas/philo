@@ -33,7 +33,7 @@ int	ft_routine_loop(t_philo *philo)
 
 	if (philo->index % 2)
 	{
-		usleep(3000);
+		usleep(2500);
 		first = philo->left_fork;
 		second = philo->right_fork;
 	}
