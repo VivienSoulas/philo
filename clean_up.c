@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 11:41:54 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 15:36:18 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/10 14:17:57 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ void	ft_clean_table(t_table *table, int forks)
 	}
 	pthread_mutex_destroy(&table->death_mutex);
 	pthread_mutex_destroy(&table->print_mutex);
-	pthread_mutex_destroy(&table->full_mutex);
-	pthread_mutex_destroy(&table->meals_mutex);
+	pthread_mutex_destroy(&table->meal_mutex);
 	free(table->forks);
 	table->forks = NULL;
 }
@@ -45,4 +44,11 @@ void	ft_clean_all(t_philo *philos, t_table *table)
 	ft_clean_table(table, table->n_philo);
 	free(table);
 	table = NULL;
+}
+
+void	ft_full_check(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->table->meal_mutex);
+	philo->full = 1;
+	pthread_mutex_unlock(&philo->table->meal_mutex);
 }

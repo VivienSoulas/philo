@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:23:56 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 15:40:43 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/10 12:21:01 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,13 +89,17 @@ void	ft_join_threads(t_philo *philo, t_monitor_data *monitor_data)
 	while (i < philo->table->n_philo)
 	{
 		pthread_join(philo[i].thread, NULL);
+		i++;
+	}
+	pthread_join(monitor_data->monitor, NULL);
+	i = 0;
+	while (i < philo->table->n_philo)
+	{
 		pthread_mutex_destroy(&philo->table->forks[i]);
 		i++;
 	}
 	free(philo->table->forks);
 	pthread_mutex_destroy(&philo->table->death_mutex);
-	pthread_mutex_destroy(&philo->table->full_mutex);
+	pthread_mutex_destroy(&philo->table->meal_mutex);
 	pthread_mutex_destroy(&philo->table->print_mutex);
-	pthread_mutex_destroy(&philo->table->meals_mutex);
-	pthread_join(monitor_data->monitor, NULL);
 }

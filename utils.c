@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:03 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 16:04:04 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/10 12:35:25 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ int	ft_check_input(char **av)
 	check = ft_atoi(av[1]);
 	if (check == -1 || check == 0)
 		return (write(2, "Philo: invalid number of philosophers\n", 38), 1);
+	else if (check == 1)
+		return (printf("0 1 died\n"), 1);
 	check = ft_atoi(av[2]);
 	if (check == -1)
 		return (write(2, "Philo: invalid time to die\n", 28), 1);
@@ -72,7 +74,12 @@ long	ft_get_time(struct timeval start_time)
 
 void	ft_print(long ms, int index, int message, t_philo *philo)
 {
-	if (philo->table->death == 0)
+	int	is_dead;
+
+	pthread_mutex_lock(&philo->table->death_mutex);
+	is_dead = philo->table->death;
+	pthread_mutex_unlock(&philo->table->death_mutex);
+	if (is_dead == 0)
 	{
 		pthread_mutex_lock(&philo->table->print_mutex);
 		if (message == TAKING_FORK)
@@ -95,11 +102,11 @@ void	ft_print(long ms, int index, int message, t_philo *philo)
 
 void	ft_update(t_philo *phi, t_table *table, int i, int *all_full)
 {
+	pthread_mutex_lock(&table->meal_mutex);
 	if (phi[i].full == 1 && phi[i].check == 0)
 	{
-		pthread_mutex_lock(&table->full_mutex);
 		phi[i].check = 1;
 		(*all_full)++;
-		pthread_mutex_unlock(&table->full_mutex);
 	}
+	pthread_mutex_unlock(&table->meal_mutex);
 }

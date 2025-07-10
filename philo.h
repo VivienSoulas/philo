@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:00 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/03 16:03:53 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/10 14:18:06 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,8 @@
 typedef struct s_table
 {
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	meals_mutex;
 	pthread_mutex_t	death_mutex;
-	pthread_mutex_t	full_mutex;
+	pthread_mutex_t	meal_mutex;
 	pthread_mutex_t	print_mutex;
 	struct timeval	start_time;
 	int				n_philo;
@@ -82,13 +81,14 @@ int				ft_init_forks(t_table *table);
 void			*routine(void *philo);
 int				ft_routine_loop(t_philo *philo);
 void			*monitor_routine(void *monitor_datas);
-int				ft_moni_loop(int i, t_table *table, int *all_full, t_philo *phi);
+int				ft_moni_loop(int i, t_table *table, int *full, t_philo *phi);
 void			ft_philosophing(t_philo *philo, int first, int second);
 
 // clean up
 void			ft_clean_table(t_table *table, int forks);
 void			ft_clean_philos(t_philo *philos, int count);
 void			ft_clean_all(t_philo *philos, t_table *table);
+void			ft_full_check(t_philo *philo);
 
 // utils
 int				ft_check_input(char **av);
