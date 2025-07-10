@@ -31,6 +31,7 @@
 typedef struct s_table
 {
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	meals_mutex;
 	pthread_mutex_t	death_mutex;
 	pthread_mutex_t	full_mutex;
 	pthread_mutex_t	print_mutex;
@@ -81,7 +82,7 @@ int				ft_init_forks(t_table *table);
 void			*routine(void *philo);
 int				ft_routine_loop(t_philo *philo);
 void			*monitor_routine(void *monitor_datas);
-int				ft_moni_loop(int i, t_table *table, int all_full, t_philo *phi);
+int				ft_moni_loop(int i, t_table *table, int *all_full, t_philo *phi);
 void			ft_philosophing(t_philo *philo, int first, int second);
 
 // clean up
@@ -94,6 +95,6 @@ int				ft_check_input(char **av);
 int				ft_atoi(char *s1);
 long			ft_get_time(struct timeval start_time);
 void			ft_print(long ms, int index, int message, t_philo *philo);
-void			ft_update(t_philo *phi, t_table *table, int i, int all_full);
+void			ft_update(t_philo *phi, t_table *table, int i, int *all_full);
 
 #endif

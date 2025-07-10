@@ -22,13 +22,14 @@ void	ft_clean_table(t_table *table, int forks)
 	pthread_mutex_destroy(&table->death_mutex);
 	pthread_mutex_destroy(&table->print_mutex);
 	pthread_mutex_destroy(&table->full_mutex);
+	pthread_mutex_destroy(&table->meals_mutex);
 	free(table->forks);
 	table->forks = NULL;
 }
 
 void	ft_clean_philos(t_philo *philos, int count)
 {
-	while (count >= 0)
+	while (count > 0)
 	{
 		if (pthread_join(philos[count].thread, NULL) != 0)
 			write(2, "Error: failed to join philosopher thread\n", 42);
