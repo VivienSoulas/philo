@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:03 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/10 12:35:25 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/11 14:10:09 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ int	ft_check_input(char **av)
 	check = ft_atoi(av[1]);
 	if (check == -1 || check == 0)
 		return (write(2, "Philo: invalid number of philosophers\n", 38), 1);
-	else if (check == 1)
-		return (printf("0 1 died\n"), 1);
 	check = ft_atoi(av[2]);
 	if (check == -1)
 		return (write(2, "Philo: invalid time to die\n", 28), 1);
@@ -36,6 +34,9 @@ int	ft_check_input(char **av)
 		if (check == -1)
 			return (write(2, "Philo: invalid number of time to eat\n", 38), 1);
 	}
+	check = ft_atoi(av[1]);
+	if (check == 1)
+		return (printf("0 1 died\n"), 1);
 	return (0);
 }
 
@@ -59,17 +60,6 @@ int	ft_atoi(char *s1)
 	if (s1[i])
 		return (-1);
 	return (n * sign);
-}
-
-long	ft_get_time(struct timeval start_time)
-{
-	struct timeval	now;
-	long			ms;
-
-	gettimeofday(&now, NULL);
-	ms = (now.tv_sec - start_time.tv_sec) * 1000
-		+ (now.tv_usec - start_time.tv_usec) / 1000;
-	return (ms);
 }
 
 void	ft_print(long ms, int index, int message, t_philo *philo)

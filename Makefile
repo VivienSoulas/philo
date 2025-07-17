@@ -3,7 +3,8 @@ SRC		=	philo.c \
 			table.c \
 			routine.c \
 			clean_up.c \
-			utils.c
+			utils.c \
+			time.c
 
 OBJ_DIR	=	objects
 OBJ		=	$(SRC:%.c=$(OBJ_DIR)/%.o)

@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:24:00 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/10 14:18:06 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/11 14:11:39 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,11 @@ void			ft_full_check(t_philo *philo);
 // utils
 int				ft_check_input(char **av);
 int				ft_atoi(char *s1);
-long			ft_get_time(struct timeval start_time);
 void			ft_print(long ms, int index, int message, t_philo *philo);
 void			ft_update(t_philo *phi, t_table *table, int i, int *all_full);
+
+// time
+long			ft_get_time(struct timeval start_time);
+void			ft_sleep(int i, t_philo *philo);
 
 #endif
