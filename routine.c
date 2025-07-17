@@ -6,7 +6,7 @@
 /*   By: vsoulas <vsoulas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 13:27:11 by vsoulas           #+#    #+#             */
-/*   Updated: 2025/07/11 14:20:06 by vsoulas          ###   ########.fr       */
+/*   Updated: 2025/07/17 16:49:44 by vsoulas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,7 @@ void	ft_philosophing(t_philo *philo, int first, int second)
 	ft_print(ms, philo->index, TAKING_FORK, philo);
 	ms = ft_get_time(philo->table->start_time);
 	ft_print(ms, philo->index, EATING, philo);
-	ft_sleep(EATING, philo);
-	//usleep(philo->table->t_eat * 1000);				// check for death
+	ft_eating(philo);
 	pthread_mutex_lock(&philo->table->meal_mutex);
 	gettimeofday(&philo->last_meal, NULL);
 	philo->meals_eaten++;
@@ -132,8 +131,7 @@ void	ft_philosophing(t_philo *philo, int first, int second)
 	pthread_mutex_unlock(&philo->table->forks[second]);
 	ms = ft_get_time(philo->table->start_time);
 	ft_print(ms, philo->index, SLEEPING, philo);
-	ft_sleep(SLEEPING, philo);
-	//usleep(philo->table->t_sleep * 1000);			// check for death
+	ft_sleeping(philo);
 	ms = ft_get_time(philo->table->start_time);
 	ft_print(ms, philo->index, THINKING, philo);
 }

@@ -11,6 +11,7 @@ OBJ		=	$(SRC:%.c=$(OBJ_DIR)/%.o)
 
 CC		=	cc
 CFLAGS	=	-Werror -Wall -Wextra -g -pthread
+TSAN_FLAG =  -fsanitize=thread
 
 # ANSI color codes
 BLACK	=	\033[38;2;0;0;0m
@@ -26,12 +27,19 @@ $(OBJ_DIR)/%.o:%.c
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
+# compile with ThreadSanitizer
+$(OBJ_DIR)/tsan_%.o:%.c
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) $(TSAN_FLAGS) -c $< -o $@
+
 # instructions to make NAME
 $(NAME): $(OBJ)
 	@$(CC) $(OBJ) -o $(NAME)
 	@echo "$(LIME)==========================\nSUCCESS : Program compiled\n==========================\n$(RESET)"
 
-PHONY: all clean fclean re val
+tsan: $(SRC:%.c=$(OBJ_DIR)/tsan_%.o)
+	@$(CC) $(CFLAGS) $(TSAN_FLAGS) $^ -o $(NAME)_tsan
+	@echo "$(YELLOW)===============================\nSUCCESS : ThreadSanitizer build\n===============================\n$(RESET)"
 
 all: $(NAME)
 
@@ -41,6 +49,9 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
+	@rm -f $(NAME)_tsan
 	@echo "$(RED)/!\ Executable removed /!\ $(RESET)"
 
 re: fclean all
+
+PHONY: all clean fclean re tsan
